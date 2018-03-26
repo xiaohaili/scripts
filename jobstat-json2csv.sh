@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # jobstat-json2csv.sh
+#    - convert jobstat from json format to csv
 # 
 # jq: commandline JSON processor https://stedolan.github.io/jq
 # json2csv: command line tool to convert json to csv http://github.com/jehiah/json2csv
@@ -18,50 +19,23 @@ cat $json | ./jq -c '. | .data | .children[] | {name, u: .children[]}' | \
 		split(strhpc, hpclist, "\n");
 	}
 	{
-		jobcount[$1, $2] = $3;
-		coresum[$1, $2] = $4;
-		walltime[$1, $2] = $5;
+		count[1, $1, $2] = $3;		# jobcount
+		count[2, $1, $2] = $4;		# coresum
+		count[3, $1, $2] = $5;		# walltime
 	}
 	END {
-		printf(" , ");
-		for (j=1; j<=length(hpclist); j++) {
-			printf("%s, ", hpclist[j]);
-		}
-		printf("\n");
-		for (i=1; i<=length(datelist); i++) {
-			printf("%s, ", datelist[i]);
+		for (n=1; n<=3; n++) {
+			printf(" , ");
 			for (j=1; j<=length(hpclist); j++) {
-				printf("%-4d, ", jobcount[datelist[i], hpclist[j]]);
+				printf("%s, ", hpclist[j]);
 			}
 			printf("\n");
-		}
-		printf("\n");
-
-
-		printf(" , ");
-		for (j=1; j<=length(hpclist); j++) {
-			printf("%s, ", hpclist[j]);
-		}
-		printf("\n");
-		for (i=1; i<=length(datelist); i++) {
-			printf("%s, ", datelist[i]);
-			for (j=1; j<=length(hpclist); j++) {
-				printf("%-4d, ", coresum[datelist[i], hpclist[j]]);
-			}
-			printf("\n");
-		}
-		printf("\n");
-
-
-		printf(" , ");
-		for (j=1; j<=length(hpclist); j++) {
-			printf("%s, ", hpclist[j]);
-		}
-		printf("\n");
-		for (i=1; i<=length(datelist); i++) {
-			printf("%s, ", datelist[i]);
-			for (j=1; j<=length(hpclist); j++) {
-				printf("%-4d, ", walltime[datelist[i], hpclist[j]]);
+			for (i=1; i<=length(datelist); i++) {
+				printf("%s, ", datelist[i]);
+				for (j=1; j<=length(hpclist); j++) {
+					printf("%-4d, ", count[n, datelist[i], hpclist[j]]);
+				}
+				printf("\n");
 			}
 			printf("\n");
 		}
