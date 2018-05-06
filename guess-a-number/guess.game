@@ -1,0 +1,37 @@
+#!/bin/bash
+
+echo
+echo
+echo
+echo
+echo -e "\t\t~-== Hai Dao Qi Bing ==-~"
+echo
+echo
+echo
+echo
+
+secret=$RANDOM
+count=1
+
+start=$(date "+%s")
+
+echo -n "($count) Please guess a number: "
+while read -r guess
+do
+	count=$((count+1))
+
+	if [ "$guess" -gt "$secret" ]; then
+		echo "No, $guess is too big."
+	elif [ "$guess" -lt "$secret" ]; then
+		echo "No, $guess is too small."
+	else
+		end=$(date "+%s")
+		t=$((end-start))
+
+		echo "Yes, it's $secret. You Win! (in $t seconds.)"
+		exit
+	fi
+
+	echo
+	echo -n "($count) Please guess a number: "
+done < /dev/stdin

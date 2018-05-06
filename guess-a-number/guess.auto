@@ -1,0 +1,38 @@
+#!/bin/bash
+
+echo
+echo
+echo
+echo
+echo -e "\t\t~-== Hai Dao Qi Bing ==-~"
+echo
+echo
+echo
+echo
+
+secret=$RANDOM
+count=1
+
+start=$(date "+%N")
+
+min=0
+max=32768
+
+while guess=$(((min+max)/2)); do
+	echo "($count) Please guess a number: $guess"
+	count=$((count+1))
+
+	if [ "$guess" -gt "$secret" ]; then
+		echo "No, $guess is too big."
+		max=$guess
+	elif [ "$guess" -lt "$secret" ]; then
+		echo "No, $guess is too small."
+		min=$guess
+	else
+		end=$(date "+%N")
+		t=$((end-start))
+
+		echo "Yes, it's $secret. You Win! (in $(($t/1000000)) ms.)"
+		exit
+	fi
+done
