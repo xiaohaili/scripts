@@ -1,0 +1,13 @@
+set term png font "/usr/share/fonts/wqy-zenhei/wqy-zenhei.ttc,16"
+
+y(x)=(30-2*x)*(30-2*x)*x
+
+set title "y(x) = (30-2x)*(30-2x)*x"
+set xlabel "x"
+set ylabel "y"
+
+set output "curve^1_30.png"
+plot [1:30] y(x) title "" with lines lw 2
+
+set output "curve^-100_200.png"
+plot [-100:200] y(x) title "" with lines lw 2
