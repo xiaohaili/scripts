@@ -1,0 +1,25 @@
+#!/bin/bash
+# bintree search in bash
+
+search_node() {
+	local node
+	local left right
+
+	node=$1
+	echo -n "$node "
+
+	left=$((2*node))
+	right=$((2*node+1))
+	if ((left <= nr_nodes)); then
+		search_node $left
+	fi
+	if ((right <= nr_nodes)); then
+		search_node $right
+	fi
+}
+
+# accept a parameter, default to 8
+nr_nodes=${1-8}
+
+root=1
+search_node $root && echo

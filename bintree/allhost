@@ -1,0 +1,56 @@
+#!/bin/bash
+# use bintree to walk through all nodes on a cluster
+
+load_host_from_file() {
+	# hosts=("comput1" "comput2" "comput3" "comput4" "comput5" "comput6" "comput7" "comput8")
+	[ -r "$1" ] && hosts=( $(cat "$1") )
+}
+
+get_host_by_node() {
+        local node=$1
+        local idx=$((node-1))
+
+	# array start from 0
+        if ((idx >= 0)); then
+                echo "${hosts[$idx]}"
+        fi
+}
+
+remote_exec() {
+	local node=$1
+	local host="$(get_host_by_node $node)"
+
+	ssh "$host" "\"$myname\" \"$cmd\" \"$node\""
+	# run in backgroud, return back fast
+	#ssh -q -t "$host"  "set -m;  \"$myname\" \"$cmd\" \"$node\" &"
+}
+
+myname="$0"
+cmd=${1-"hostname"}
+node=${2-1}
+
+hosts=""
+hostfile=~/hostfile
+load_host_from_file $hostfile
+if [ -z $hosts ]; then
+	echo "Load hosts from \"$hostfile\" failed, exit."
+	exit 1
+fi
+
+nr_nodes=${#hosts[@]}
+if ((node == 1)); then
+	echo -n "To run '$cmd', "
+	echo -e "load $nr_nodes hosts: ${hosts[@]}"
+fi
+
+# executing what you want
+$cmd
+
+left=$((2*node))
+right=$((2*node+1))
+if ((left <= nr_nodes)); then
+	remote_exec $left 
+fi
+if ((right <= nr_nodes)); then
+	remote_exec $right
+fi
