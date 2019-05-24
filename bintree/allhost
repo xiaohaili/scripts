@@ -20,9 +20,9 @@ remote_exec() {
 	local node=$1
 	local host="$(get_host_by_node $node)"
 
-	ssh "$host" "\"$myname\" \"$cmd\" \"$node\""
+	#ssh "$host" "\"$myname\" \"$cmd\" \"$node\""
 	# run in backgroud, return back fast
-	#ssh -q -t "$host"  "set -m;  \"$myname\" \"$cmd\" \"$node\" &"
+	ssh -q -t "$host"  "set -m;  \"$myname\" \"$cmd\" \"$node\" &"
 }
 
 myname="$0"
@@ -43,9 +43,6 @@ if ((node == 1)); then
 	echo -e "load $nr_nodes hosts: ${hosts[@]}"
 fi
 
-# executing what you want
-$cmd
-
 left=$((2*node))
 right=$((2*node+1))
 if ((left <= nr_nodes)); then
@@ -54,3 +51,6 @@ fi
 if ((right <= nr_nodes)); then
 	remote_exec $right
 fi
+
+# executing what you want
+$cmd
