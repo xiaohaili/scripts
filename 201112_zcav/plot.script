@@ -1,0 +1,7 @@
+set term png size 1024,768
+set output "fileserver.png"
+
+set xlabel "offset (GiB)"
+set ylabel "MiB/s"
+
+plot "sda.zcav" u 1:2 t "WD3200AAJS", "sdb.zcav" u 1:2 t "WD10EZEX"

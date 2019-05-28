@@ -1,0 +1,118 @@
+[haili@n07 linux-3.5]$ lsmod
+Module                  Size  Used by
+nfs                   363734  1 
+lockd                  67271  1 nfs
+fscache                45544  1 nfs
+auth_rpcgss            35496  1 nfs
+nfs_acl                 2637  1 nfs
+sunrpc                226072  13 nfs,lockd,auth_rpcgss,nfs_acl
+ipt_REJECT              2312  2 
+nf_conntrack_ipv4       9610  2 
+nf_defrag_ipv4          1441  1 nf_conntrack_ipv4
+xt_state                1322  2 
+nf_conntrack           82257  2 nf_conntrack_ipv4,xt_state
+iptable_filter          1682  1 
+ip_tables              19749  1 iptable_filter
+dcdbas                  8249  0 
+coretemp                7058  0 
+crc32c_intel            2146  0 
+ghash_clmulni_intel     4420  0 
+aesni_intel            43509  0 
+cryptd                 10444  2 ghash_clmulni_intel,aesni_intel
+aes_x86_64              7872  1 aesni_intel
+aes_generic            27567  2 aesni_intel,aes_x86_64
+lpc_ich                11200  0 
+mfd_core                3582  1 lpc_ich
+sg                     29976  0 
+ext4                  480470  3 
+mbcache                 7254  1 ext4
+jbd2                   88784  1 ext4
+usb_storage            49790  0 
+ata_piix               16226  0 
+sd_mod                 38366  3 
+crc_t10dif              1499  1 sd_mod
+
+
+[haili@n07 ~]$ sudo mkfs.xfs /dev/sdb1 
+meta-data=/dev/sdb1              isize=256    agcount=4, agsize=18310082 blks
+         =                       sectsz=512   attr=2
+data     =                       bsize=4096   blocks=73240327, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0
+log      =internal log           bsize=4096   blocks=35761, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+
+
+for i in 1 2 3 ; do echo dd if=/dev/zero of=testfile$i bs=1M count=49152 oflag=direct; echo; echo; done
+
+[/data/tmp]
+xfs rw,seclabel,relatime,attr2,noquota 0 0
+51539607552 bytes (52 GB) copied, 585.079 s, 88.0 MB/s
+51539607552 bytes (52 GB) copied, 602.075 s, 85.6 MB/s
+51539607552 bytes (52 GB) copied, 623.149 s, 82.7 MB/s
+
+ext4 rw,seclabel,relatime,data=ordered 0 0
+51539607552 bytes (52 GB) copied, 588.209 s, 87.6 MB/s
+51539607552 bytes (52 GB) copied, 605.787 s, 85.1 MB/s
+51539607552 bytes (52 GB) copied, 629.143 s, 81.9 MB/s
+
+
+[/home/tmp]
+ext4 rw,seclabel,relatime,data=ordered 0 0
+51539607552 bytes (52 GB) copied, 622.373 s, 82.8 MB/s
+51539607552 bytes (52 GB) copied, 648.233 s, 79.5 MB/s
+51539607552 bytes (52 GB) copied, 691.053 s, 74.6 MB/s
+
+                                                            random  random    bkwd   record   stride                                   
+              KB  reclen   write rewrite    read    reread    read   write    read  rewrite     read   fwrite frewrite   fread  freread
+        50331648    1024  129584  119334   136057   136044                                                                          
+
+
+
+
+
+
+[haili@n07 tmp]$ uname -a
+Linux n07 3.5.0-hl #13 SMP Thu Aug 9 10:27:37 CST 2012 x86_64 x86_64 x86_64 GNU/Linux
+
+[/data/tmp]
+/dev/sdb1 /data ext4 rw,relatime,data=ordered 0 0
+iozone -i 0,1,2 -c -e -w -r 1024k -s 48g
+                                                            random  random    bkwd   record   stride                                   
+              KB  reclen   write rewrite    read    reread    read   write    read  rewrite     read   fwrite frewrite   fread  freread
+        50331648    1024  164648  166562   172249   172241  99230  125287
+
+iozone -i 0 -c -e -w -r 256k -s 48g
+                                                            random  random    bkwd   record   stride                                   
+              KB  reclen   write rewrite    read    reread    read   write    read  rewrite     read   fwrite frewrite   fread  freread
+        50331648     256  154086  157270   162452   162461  44317   83322
+
+
+
+[ext4-randrd.iostat]
+# iozone: reclen(Kb) random_read(Mb)
+0.512 49.166
+4 2.008
+8 3.105
+16 5.941
+32 12.267
+64 17.724
+128 23.788
+256 41.058
+512 50.747
+1024 61.308
+
+[xfs-randrd.iostat]
+# iozone: reclen(Kb) random_read(Mb)
+0.512 68.578
+4 1.023
+8 1.989
+16 3.728
+32 7.066
+64 12.997
+128 23.419
+256 53.488
+512 75.323
+1024 94.474
+
